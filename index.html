@@ -17,6 +17,7 @@
 <body>
   <!-- Pull dynamic content from the data.json file -->
   <main class="comments">
+    <!--amyrobson-->
     <section class="comments__item">
       <header class="comments__item__header">
         <img src="images/avatars/image-amyrobson.png" alt="avatar image" class="comments__item__header__round-img">
@@ -26,16 +27,99 @@
       <p class="comments__item__content">
         Impressive! Thought ir seems the drag feature could be improved. But overal it looks increible. You've nailed the design and the responsiveness at various breakpoints works really well.
       </p>
-      <div class="comments__item__footer">
-        <div class="comments__item__footer__votes">
-          <button class="comments__item__footer__votes__btn btn">+</button>
-          <p class="comments__item__footer__votes__quantity">12</p>
-          <button class="comments__item__footer__votes__btn btn">-</button>
-        </div>
-        <button class="comments__item__footer__btn btn">
-          <i class="fa-solid fa-reply"></i>
-          Reply
-        </button>  
+      <div class="comments__item__votes">
+        <button class="comments__item__votes__btn btn">+</button>
+        <p class="comments__item__votes__quantity">4</p>
+        <button class="comments__item__votes__btn btn">-</button>
+      </div>
+      <div class="comments__item__actions">
+          <button class="comments__item__actions__btn">
+              <i class="fa-solid fa-reply"></i>
+              delete
+          </button>          
+          <button class="comments__item__actions__btn">
+              <i class="fa-solid fa-reply"></i>
+              edit
+          </button>   
+      </div>
+    </section>
+    <!--maxblagun-->
+    <section class="comments__item">
+      <header class="comments__item__header">
+        <img src="images/avatars/image-maxblagun.png" alt="avatar image" class="comments__item__header__round-img">
+        <p class="comments__item__header__username">maxblagun</p>
+        <p class="comments__item__header__date">2 weeks ago</p>
+      </header>
+      <p class="comments__item__content">
+        Woah, your project looks awesome! How long have you been coding for? I'm still new, but think i want to dive into React as well soon. Perhaps you can give me an insight on where i can learn React? Thanks!
+      </p>
+      <div class="comments__item__votes">
+        <button class="comments__item__votes__btn btn">+</button>
+        <p class="comments__item__votes__quantity">4</p>
+        <button class="comments__item__votes__btn btn">-</button>
+      </div>
+      <div class="comments__item__actions">
+          <button class="comments__item__actions__btn">
+              <i class="fa-solid fa-reply"></i>
+              delete
+          </button>          
+          <button class="comments__item__actions__btn">
+              <i class="fa-solid fa-reply"></i>
+              edit
+          </button>   
+      </div>     
+    </section>
+    <!--ramsesmiron response to maxblagun-->
+    <section class="comments__item comments__item--reply">
+      <header class="comments__item__header">
+        <img src="images/avatars/image-ramsesmiron.png" alt="avatar image" class="comments__item__header__round-img">
+        <p class="comments__item__header__username">ramsesmiron</p>
+        <p class="comments__item__header__date">1 week ago</p>
+      </header>
+      <p class="comments__item__content">
+        @maxblagun If you're still new, I'd recommend focusing on the fundamentals of HTML, CSS, and JS before considering React. It´s very tempting to jump ahead but lay a solid foundation first.
+      </p>
+      <div class="comments__item__votes">
+        <button class="comments__item__votes__btn btn">+</button>
+        <p class="comments__item__votes__quantity">4</p>
+        <button class="comments__item__votes__btn btn">-</button>
+      </div>
+      <div class="comments__item__actions">
+          <button class="comments__item__actions__btn">
+              <i class="fa-solid fa-reply"></i>
+              delete
+          </button>          
+          <button class="comments__item__actions__btn">
+              <i class="fa-solid fa-reply"></i>
+              edit
+          </button>   
+      </div>
+    </section>
+    <!--juliusomo response to maxblagun-->
+    <section class="comments__item comments__item--reply">
+      <header class="comments__item__header">
+        <img src="images/avatars/image-juliusomo.png" alt="avatar image" class="comments__item__header__round-img">
+        <p class="comments__item__header__username">juliusomo</p>
+        <p class="comments__item__header__you comments__item__header__you--visible">You</p>
+        <p class="comments__item__header__date">2 days ago</p>
+      </header>
+      <p class="comments__item__content">
+        @ramsesmiron I couldn't agree more with this. Everything moves so fast and it always seems like everyone knows the newest library/framework. But the fundamentals are what stay constant.
+      </p>
+      <div class="comments__item__votes">
+        <button class="comments__item__votes__btn btn">+</button>
+        <p class="comments__item__votes__quantity">4</p>
+        <button class="comments__item__votes__btn btn">-</button>
+      </div>
+      <div class="comments__item__actions">
+          <button class="comments__item__actions__btn">
+              <i class="fa-solid fa-reply"></i>
+              delete
+          </button>          
+          <button class="comments__item__actions__btn">
+              <i class="fa-solid fa-reply"></i>
+              edit
+          </button>   
       </div>
     </section>
   </main>

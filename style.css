@@ -16,7 +16,6 @@
     --Light-gray: hsl(223, 19%, 93%);
     --Very-light-gray: hsl(228, 33%, 97%);
     --White: hsl(0, 0%, 100%);
-
     --ff: 'Rubik', sans-serif;
     --fs-body: 16px;
     
@@ -30,12 +29,34 @@ body {
 .comments {
     margin: 0 auto;   
     width: 90vw; 
+    max-width: 720px;
 }
 
 .comments__item {
     margin: 1em 0;
     padding: 1em;
     background-color: var(--White);
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr 2fr 2fr 2fr;
+    grid-template-rows: 2fr auto 1fr;
+    grid-template-areas: "header header header header header header "
+               "mycontent mycontent mycontent mycontent mycontent mycontent"
+               "votes . . . . actions";
+}
+
+.comments__item--reply {
+    margin-left: 1.5em;
+    position: relative;
+}
+
+.comments__item--reply:after {
+    content: '';
+    width: 0;
+    height: 100%;
+    position: absolute;
+    left: -1.5em;
+    top: 0px;
+    border: 1px solid gray;   
 }
 
 .comments__item__header{
@@ -43,23 +64,78 @@ body {
     flex-direction: row;
     justify-content: left;
     align-items: center;
+    grid-area: header;
 }
 
-.comments__item__footer {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+.comments__item__content{
+    font-size: 1em;
+    grid-area: mycontent;
 }
 
-.comments__item__footer__votes{
+.comments__item__votes{
     display: flex;
-    flex-direction: row;
+    flex-direction: row; 
     justify-content: left;
-    align-items: center;
+    align-items: center;  
+    grid-area: votes;    
+    background-color: var(--Light-gray);         
+}
+.comments__item__votes__btn{
+    width: 1.2em;
+    font-size: 1.2em;
+    
+    border: none;
+}
+.comments__item__votes__quantity{
+    
+    background-color: var(--Light-gray);
+}
+.comments__item__actions{
+    display: flex;
+    flex-direction: row;  
+    justify-content: right;
+    align-items: center;  
+    grid-area: actions; 
+}
+
+
+@media (min-width: 1080px){
+    .comments__item {        
+        margin: 1em 0;
+        padding: 1em;                                
+        grid-template-areas: "votes header header header header actions"
+                             "votes mycontent mycontent mycontent mycontent mycontent"
+                             ". . . . . .";
+    }
+    .comments__item__votes{        
+        flex-direction: column; 
+        justify-content: center;
+        align-items: center;          
+    }
+
+    .comments__item--reply {
+        margin-left: 1.5em;
+        position: relative;
+    }
+    
+    .comments__item--reply:after {
+        content: '';
+        width: 0;
+        height: 100%;
+        position: absolute;
+        left: -1.5em;
+        top: 0px;
+        border: 1px solid gray;   
+    }
 }
 
 
 
 .attribution { font-size: 11px; text-align: center; }
 .attribution a { color: hsl(228, 45%, 44%); }
+
+
+
+
+
+
