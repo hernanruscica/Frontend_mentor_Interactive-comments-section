@@ -1,5 +1,7 @@
 # Frontend Mentor - Interactive comments section
 
+<a href="https://hernanruscica.github.io/Frontend_mentor_Interactive-comments-section" target = "_blank">live demo</a>
+
 ![Design preview for the Interactive comments section coding challenge](./design/desktop-preview.jpg)
 
 ## Welcome! 👋
