@@ -28,18 +28,15 @@
         Impressive! Thought ir seems the drag feature could be improved. But overal it looks increible. You've nailed the design and the responsiveness at various breakpoints works really well.
       </p>
       <div class="comments__item__votes">
-        <button class="comments__item__votes__btn btn">+</button>
+        <button class="comments__item__votes__btn ">+</button>
         <p class="comments__item__votes__quantity">4</p>
-        <button class="comments__item__votes__btn btn">-</button>
+        <button class="comments__item__votes__btn ">-</button>
       </div>
       <div class="comments__item__actions">
+                  
           <button class="comments__item__actions__btn">
               <i class="fa-solid fa-reply"></i>
-              delete
-          </button>          
-          <button class="comments__item__actions__btn">
-              <i class="fa-solid fa-reply"></i>
-              edit
+              Reply
           </button>   
       </div>
     </section>
@@ -54,18 +51,14 @@
         Woah, your project looks awesome! How long have you been coding for? I'm still new, but think i want to dive into React as well soon. Perhaps you can give me an insight on where i can learn React? Thanks!
       </p>
       <div class="comments__item__votes">
-        <button class="comments__item__votes__btn btn">+</button>
+        <button class="comments__item__votes__btn ">+</button>
         <p class="comments__item__votes__quantity">4</p>
-        <button class="comments__item__votes__btn btn">-</button>
+        <button class="comments__item__votes__btn ">-</button>
       </div>
-      <div class="comments__item__actions">
+      <div class="comments__item__actions">                  
           <button class="comments__item__actions__btn">
               <i class="fa-solid fa-reply"></i>
-              delete
-          </button>          
-          <button class="comments__item__actions__btn">
-              <i class="fa-solid fa-reply"></i>
-              edit
+              Reply
           </button>   
       </div>     
     </section>
@@ -80,18 +73,14 @@
         @maxblagun If you're still new, I'd recommend focusing on the fundamentals of HTML, CSS, and JS before considering React. It´s very tempting to jump ahead but lay a solid foundation first.
       </p>
       <div class="comments__item__votes">
-        <button class="comments__item__votes__btn btn">+</button>
+        <button class="comments__item__votes__btn ">+</button>
         <p class="comments__item__votes__quantity">4</p>
-        <button class="comments__item__votes__btn btn">-</button>
+        <button class="comments__item__votes__btn ">-</button>
       </div>
-      <div class="comments__item__actions">
+      <div class="comments__item__actions">                  
           <button class="comments__item__actions__btn">
               <i class="fa-solid fa-reply"></i>
-              delete
-          </button>          
-          <button class="comments__item__actions__btn">
-              <i class="fa-solid fa-reply"></i>
-              edit
+              Reply
           </button>   
       </div>
     </section>
@@ -107,20 +96,26 @@
         @ramsesmiron I couldn't agree more with this. Everything moves so fast and it always seems like everyone knows the newest library/framework. But the fundamentals are what stay constant.
       </p>
       <div class="comments__item__votes">
-        <button class="comments__item__votes__btn btn">+</button>
+        <button class="comments__item__votes__btn ">+</button>
         <p class="comments__item__votes__quantity">4</p>
-        <button class="comments__item__votes__btn btn">-</button>
+        <button class="comments__item__votes__btn ">-</button>
       </div>
       <div class="comments__item__actions">
-          <button class="comments__item__actions__btn">
-              <i class="fa-solid fa-reply"></i>
-              delete
+          <button class="comments__item__actions__btn comments__item__actions__btn--red">
+            <i class="fa-solid fa-trash"></i>
+              Delete
           </button>          
           <button class="comments__item__actions__btn">
-              <i class="fa-solid fa-reply"></i>
-              edit
+            <i class="fa-solid fa-pen"></i>
+              Edit
           </button>   
       </div>
+    </section>
+    <section class="textarea-item  " >
+      <textarea class = "textarea-item__textarea " placeholder="Add a Comment..."
+        name="comment" id="comment" ></textarea>
+      <img src="images/avatars/image-juliusomo.png" alt="avatar image" class="textarea-item__image comments__item__header__round-img">
+      <button class="btn textarea-item__btn">SenD</button>
     </section>
   </main>
 

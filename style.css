@@ -3,7 +3,7 @@
 *::before {
     padding: 0;
     margin: 0;
-    box-sizing: border-box;
+    box-sizing: border-box;    
 }
 
 :root {
@@ -29,13 +29,14 @@ body {
 .comments {
     margin: 0 auto;   
     width: 90vw; 
-    max-width: 720px;
+    max-width: 900px;
 }
 
 .comments__item {
     margin: 1em 0;
     padding: 1em;
     background-color: var(--White);
+    border-radius: 10px;
     display: grid;
     grid-template-columns: 1fr 2fr 2fr 2fr 2fr 2fr;
     grid-template-rows: 2fr auto 1fr;
@@ -55,8 +56,8 @@ body {
     height: 100%;
     position: absolute;
     left: -1.5em;
-    top: 0px;
-    border: 1px solid gray;   
+    top: 0;
+    border: 2px solid var(--Light-gray);   
 }
 
 .comments__item__header{
@@ -67,28 +68,63 @@ body {
     grid-area: header;
 }
 
+.comments__item__header__round-img{
+    width: 2em;
+    height: auto;
+}
+
+.comments__item__header__username {
+    font-weight: 700;
+    margin-left: 1em;
+    color: var(--Dark-blue);
+}
+
 .comments__item__content{
     font-size: 1em;
     grid-area: mycontent;
 }
 
+.comments__item__header__date {
+    margin-left: 1em;
+    color: var(--Grayish-Blue);
+}
+
+.comments__item__content {
+    color: var(--Grayish-Blue);
+    line-height: 1.5em;
+    margin: 0.5em 0 1em 0;
+}
+
 .comments__item__votes{
     display: flex;
     flex-direction: row; 
-    justify-content: left;
+    justify-content: space-between;
     align-items: center;  
     grid-area: votes;    
-    background-color: var(--Light-gray);         
+    background-color: var(--Very-light-gray);       
+    width: 100px;  
+    border-radius: 10px;
+    padding: 0.4em 0.4em;
 }
 .comments__item__votes__btn{
     width: 1.2em;
-    font-size: 1.2em;
-    
+    font-size: 1.6em;    
     border: none;
+    background-color: inherit;
+    color: var(--Light-grayish-blue);
 }
+
+.comments__item__votes__btn:active,
+.comments__item__votes__btn:hover{
+    color: var(--Moderate-blue);
+    cursor: pointer;
+}
+
 .comments__item__votes__quantity{
     
-    background-color: var(--Light-gray);
+    background-color: inherit;
+    color: var(--Moderate-blue);
+    font-weight: 700;
 }
 .comments__item__actions{
     display: flex;
@@ -96,6 +132,77 @@ body {
     justify-content: right;
     align-items: center;  
     grid-area: actions; 
+}
+
+.comments__item__actions__btn {
+    display: flex;
+    padding: 0.5em;
+    border: none;
+    color: var(--Moderate-blue);
+    background-color: inherit;
+    font-weight: 700;
+    font-size: 1em;
+}
+.comments__item__actions__btn--red {
+    color: var(--Soft-Red);
+}
+
+.comments__item__actions__btn:active,
+.comments__item__actions__btn:hover {
+    opacity: 0.7;
+    cursor: pointer;
+}
+
+.comments__item__actions__btn i {
+    margin-right: 0.5em;
+}
+
+.btn{
+    cursor: pointer;
+    text-transform: uppercase;
+    width: 6em;
+    height: 2.8em;
+    border-radius: 5px;
+    font-weight: 700;
+    font-size: 1em;
+    border: 1px solid var(--Dark-blue);
+}
+.btn:hover,
+.btn:active  {
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.textarea-item{
+    background-color: var(--White);
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: 0.5fr repeat(7, 1fr);
+    grid-template-rows: auto auto;
+    grid-template-areas: "textarea textarea textarea textarea textarea textarea textarea textarea "
+                          "avatar . . . . . btn btn ";
+    padding: 1em;
+    margin-bottom: 2em;
+    gap: 1em;
+}
+.textarea-item__textarea{
+    grid-area: textarea;
+    resize: none;
+    height: 100px;
+    border: 1px solid var(--Light-gray);
+    border-radius: 5px;
+    padding: 0.5em 1em;
+    font-size: 1em;
+    font-family: var(--ff);
+}
+.textarea-item__image{
+    grid-area: avatar;
+    align-self: center;
+    justify-self: center;
+}
+.textarea-item__btn{
+    grid-area: btn;
+    justify-self: right;
 }
 
 
@@ -109,8 +216,10 @@ body {
     }
     .comments__item__votes{        
         flex-direction: column; 
-        justify-content: center;
-        align-items: center;          
+        justify-content: space-between;
+        align-items: center; 
+        width: 2.8em;       
+        margin: 0 auto; 
     }
 
     .comments__item--reply {
@@ -125,7 +234,12 @@ body {
         position: absolute;
         left: -1.5em;
         top: 0px;
-        border: 1px solid gray;   
+        border: 1px solid var(--Light-gray);   
+    }
+
+    .textarea-item {
+        grid-template-areas: "avatar textarea textarea textarea textarea textarea textarea btn"
+                              ".     textarea textarea textarea textarea textarea textarea    .";
     }
 }
 
