@@ -1,40 +1,144 @@
-console.log("from js");
+//console.log("from js");
+
+/*Global variables and contants */
+let idContainer = "comments-container";
+let data = null;
 
 fetch('data.json')
     .then((response) => response.json())
-    .then((json) => { 
-        console.log(json);
-        getUser(json);
-        console.log("hola ", user.username);
-        console.log("tu imagen es : ", user.image);
-        const comment = getComment(json, 0);
-        console.log(comment != null ? comment.content : "no encontrado");
+    .then((json) => {       
+        //write to the localstorage and a local variable 'data'               
+        data = toLocalStorage(JSON.stringify(json))              ;
+        loadComments(data, idContainer);                                     
     });
 
-let user = {
-    "image" : null,
-    "username" : null
-}
-let comment = {
-    "id" : null,
-    "content": null,
-    "createdAt": null,
-    "score": null,
-    "user": null,
-    "replies": null
-}
     
-const getUser = (json) => {
-    user.image = json.currentUser.image.png;
-    user.username = json.currentUser.username;
+const upVote = (data, id, value) => {       
+    data.comments.forEach(comment => {  
+        if (comment.id == id) {            
+            comment.score += value;
+        }
+        comment.replies.forEach((reply) => {            
+            if (reply.id == id) {                
+                reply.score += value;
+            }
+        })
+    });
+} 
+
+
+const toLocalStorage = (data) => {
+    localStorage.setItem('data', data);    
+    return JSON.parse(localStorage.getItem('data'));
+} 
+
+const loadComments = (json, idContainer) => {
+    let commentsQuantity = json.comments.length;
+    let comments = json.comments;
+    let userName = json.currentUser.username;   
+    document.getElementById(idContainer).innerHTML = "";
+    comments.forEach(comment => {           
+        let currentComment = {...comment};
+        let isOwnComment = (userName == currentComment.user.username) ? true : false;        
+        let $comments =  createCommentFragment(currentComment, isOwnComment);
+        document.getElementById(idContainer).appendChild($comments);        
+        comment.replies.forEach((reply) => {                
+            currentComment = {...reply};
+            let isOwnComment = (userName == currentComment.user.username) ? true : false;            
+            $comments =  createCommentFragment(currentComment, isOwnComment);            
+            document.getElementById(idContainer).appendChild($comments);
+        })
+    });  
 }
 
-const getComment = (json, id) => {
-    if (json.comments[id] != null){
-        console.log("encontrado");
-        return json.comments[id];
+const createCommentFragment = (comment, isOwnComment = false) => {    
+
+    let $section = document.createElement("section");
+    $section.classList.add('comments__item');    
+    $section.setAttribute('id', `comments-item-${comment.id}`);
+    if (comment.hasOwnProperty('replyingTo') == true){
+        $section.classList.add('comments__item--reply');
+    }
+
+    let actions = "", you = "";
+    if (isOwnComment == true){
+        actions = `
+                    <button class="comments__item__actions__btn comments__item__actions__btn--red" id ="delete-comment" data-id = "${comment.id}">
+                    <i class="fa-solid fa-trash"></i>
+                        Delete
+                    </button>          
+                    <button class="comments__item__actions__btn" id ="edit-comment"  data-id = "${comment.id}" >
+                        <i class="fa-solid fa-pen"></i>
+                        Edit
+                    </button>   
+                `;
+        you = `<p class="comments__item__header__you comments__item__header__you--visible">You</p>`;
     }else{
-        console.log("no encontrado");
-        return null;
-    }    
+        actions = `
+                <button class="comments__item__actions__btn"  id ="reply-comment" data-id = "${comment.id}"  >
+                    <i class="fa-solid fa-reply"></i>
+                    Reply
+                </button>   
+                `;
+        you = ""
+    }
+
+    $section.innerHTML = `
+    <header class="comments__item__header">
+      <img src="${comment.user.image.png}" alt="image avatar of ${comment.user.username}" class="comments__item__header__round-img">
+      <p class="comments__item__header__username">${comment.user.username}</p>
+      ${you}
+      <p class="comments__item__header__date">${comment.createdAt}</p>
+    </header>
+    <p class="comments__item__content">
+      ${comment.content}
+    </p>
+    <div class="comments__item__votes">
+      <button class="comments__item__votes__btn " id ="increment-vote" data-id = "${comment.id}">+</button>
+      <p class="comments__item__votes__quantity">${comment.score}</p>
+      <button class="comments__item__votes__btn " id ="decrement-vote" data-id = "${comment.id}">-</button>
+    </div>
+    <div class="comments__item__actions">                
+        ${actions}
+    </div>`     
+    return $section;
 }
+
+const addReply = (dataId) => {
+    console.log(dataId);
+    const $container = document.getElementById(`comments-item-${dataId}`);
+    const $replySection =  document.createElement('section');
+    $replySection.classList.add('textarea-item');
+    $replySection.innerHTML = `  <textarea class = "textarea-item__textarea " placeholder="Add a Comment..."
+                                name="comment" id="comment" ></textarea>
+                                <img src="images/avatars/image-juliusomo.png" alt="avatar image" class="textarea-item__image comments__item__header__round-img">
+                                <button class="btn textarea-item__btn">SenD</button>
+                            `;    
+    console.log($replySection);
+    $container.insertAdjacentElement('afterend', $replySection);
+    
+}
+
+document.addEventListener('click', (e) => {
+    //console.log("click en el document", e.target.id)
+    if (e.target.id.includes('increment-vote') == true){
+        //console.log("increment", e.target.dataset.id) 
+        upVote(data, e.target.dataset.id, +1) 
+        loadComments(data, idContainer);  
+    }
+    if (e.target.id.includes('decrement-vote') == true){
+        //console.log("decrement", e.target.dataset.id) 
+        upVote(data, e.target.dataset.id, -1) 
+        loadComments(data, idContainer);  
+    }
+    if (e.target.id == "delete-comment"){
+        console.log("delete comment ", e.target.dataset.id);
+    }
+    if (e.target.id == "edit-comment"){
+        console.log("edit comment ", e.target.dataset.id);
+    }
+    if (e.target.id == "reply-comment"){
+        //console.log("reply comment ", e.target.dataset.id);
+        addReply(e.target.dataset.id);
+    }
+})
