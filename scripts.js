@@ -9,14 +9,6 @@ let currentUser = {
 }
 let commentsCounter = 1;
 
-    fetch('data.json')
-        .then((response) => response.json())
-        .then((json) => {       
-            //write to the localstorage and a local variable 'data'               
-            data = toLocalStorage(JSON.stringify(json))              ;
-            loadComments(data, idContainer);    
-            getUser(data);        
-        });
 
     
 const upVote = (data, id, value) => {       
@@ -162,6 +154,22 @@ const addReplyToComment = (data, parentId) => {
     console.log(`Sending a reply to comment with id: ${parentId}`, textAreaReply);
 
 }
+
+if (localStorage.getItem('data') == null){
+    fetch('data.json')
+        .then((response) => response.json())
+        .then((json) => {       
+            //write to the localstorage and a local variable 'data'               
+            data = toLocalStorage(JSON.stringify(json))              ;
+            loadComments(data, idContainer);    
+            getUser(data);        
+        });
+    }else{
+        data = JSON.parse(localStorage.getItem('data'));
+        loadComments(data, idContainer);    
+        getUser(data);
+    }
+
 
 document.addEventListener('click', (e) => {
     //console.log("click en el document", e.target.id)
