@@ -331,6 +331,7 @@ body {
     .textarea-item {
         grid-template-areas: "avatar textarea textarea textarea textarea textarea textarea btn"
                               ".     textarea textarea textarea textarea textarea textarea    .";
+        margin-bottom: 1em ;
     }
 
     .comments__item__edit {

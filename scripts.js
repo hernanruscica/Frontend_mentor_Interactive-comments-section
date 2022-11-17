@@ -3,14 +3,20 @@
 /*Global variables and contants */
 let idContainer = "comments-container";
 let data = null;
+let currentUser = {
+    'image' : null,
+    'userName': null
+}
+let commentsCounter = 1;
 
-fetch('data.json')
-    .then((response) => response.json())
-    .then((json) => {       
-        //write to the localstorage and a local variable 'data'               
-        data = toLocalStorage(JSON.stringify(json))              ;
-        loadComments(data, idContainer);                                     
-    });
+    fetch('data.json')
+        .then((response) => response.json())
+        .then((json) => {       
+            //write to the localstorage and a local variable 'data'               
+            data = toLocalStorage(JSON.stringify(json))              ;
+            loadComments(data, idContainer);    
+            getUser(data);        
+        });
 
     
 const upVote = (data, id, value) => {       
@@ -27,6 +33,11 @@ const upVote = (data, id, value) => {
 } 
 
 
+const getUser = (data) => {   
+    currentUser.image = data.currentUser.image.png;
+    currentUser.userName = data.currentUser.username;   
+}
+
 const toLocalStorage = (data) => {
     localStorage.setItem('data', data);    
     return JSON.parse(localStorage.getItem('data'));
@@ -35,18 +46,21 @@ const toLocalStorage = (data) => {
 const loadComments = (json, idContainer) => {
     let commentsQuantity = json.comments.length;
     let comments = json.comments;
-    let userName = json.currentUser.username;   
+    let userName = json.currentUser.username;       
     document.getElementById(idContainer).innerHTML = "";
     comments.forEach(comment => {           
         let currentComment = {...comment};
         let isOwnComment = (userName == currentComment.user.username) ? true : false;        
         let $comments =  createCommentFragment(currentComment, isOwnComment);
-        document.getElementById(idContainer).appendChild($comments);        
+        document.getElementById(idContainer).appendChild($comments);   
+        commentsCounter += 1;
+        
         comment.replies.forEach((reply) => {                
             currentComment = {...reply};
             let isOwnComment = (userName == currentComment.user.username) ? true : false;            
             $comments =  createCommentFragment(currentComment, isOwnComment);            
             document.getElementById(idContainer).appendChild($comments);
+            commentsCounter += 1;
         })
     });  
 }
@@ -54,10 +68,12 @@ const loadComments = (json, idContainer) => {
 const createCommentFragment = (comment, isOwnComment = false) => {    
 
     let $section = document.createElement("section");
+    let mention = '';
     $section.classList.add('comments__item');    
     $section.setAttribute('id', `comments-item-${comment.id}`);
     if (comment.hasOwnProperty('replyingTo') == true){
         $section.classList.add('comments__item--reply');
+        mention = `<a href = "" class="user-mention">@${comment.replyingTo}</a>  `;
     }
 
     let actions = "", you = "";
@@ -91,7 +107,7 @@ const createCommentFragment = (comment, isOwnComment = false) => {
       <p class="comments__item__header__date">${comment.createdAt}</p>
     </header>
     <p class="comments__item__content">
-      ${comment.content}
+      ${mention + comment.content}
     </p>
     <div class="comments__item__votes">
       <button class="comments__item__votes__btn " id ="increment-vote" data-id = "${comment.id}">+</button>
@@ -104,19 +120,47 @@ const createCommentFragment = (comment, isOwnComment = false) => {
     return $section;
 }
 
-const addReply = (dataId) => {
-    console.log(dataId);
+const createReplyFrag = (dataId) => {    
     const $container = document.getElementById(`comments-item-${dataId}`);
     const $replySection =  document.createElement('section');
     $replySection.classList.add('textarea-item');
-    $replySection.innerHTML = `  <textarea class = "textarea-item__textarea " placeholder="Add a Comment..."
-                                name="comment" id="comment" ></textarea>
-                                <img src="images/avatars/image-juliusomo.png" alt="avatar image" class="textarea-item__image comments__item__header__round-img">
-                                <button class="btn textarea-item__btn">SenD</button>
-                            `;    
-    console.log($replySection);
-    $container.insertAdjacentElement('afterend', $replySection);
     
+    $replySection.classList.add('comments__item--reply');
+    $replySection.innerHTML = `  <textarea class = "textarea-item__textarea " placeholder="Add a reply to the comment..."
+                                    name="comment" id="textarea-comment-${dataId}" ></textarea>
+                                    <img src="${currentUser.image}" alt="avatar image" class="textarea-item__image comments__item__header__round-img">
+                                    <button class="btn textarea-item__btn" id = "send-reply" data-id = "${dataId}">SenD</button>
+                            `;        
+    $container.insertAdjacentElement('afterend', $replySection);    
+}
+
+const addReplyToComment = (data, parentId) => {
+    let idPrefix = 'textarea-comment-';    
+    let replyingTo = document.getElementById(`comments-item-${parentId}`).querySelector('header p').innerHTML;
+    const textAreaReply = document.getElementById(idPrefix + parentId).value;
+    let newUniqueId = commentsCounter + 1
+    let newReply = {
+                    "id": newUniqueId,
+                    "content": textAreaReply,
+                    "createdAt": "Now",
+                    "score": 0,
+                    "replyingTo": replyingTo,
+                    "user": {
+                    "image": { 
+                        "png": currentUser.image,
+                        "webp": `./images/avatars/image-${currentUser.userName}.webp`
+                    },
+                    "username": currentUser.userName
+                    }
+                }    
+    data.comments.forEach((comment) => {
+        if (comment.id == parentId){
+            comment.replies.unshift(newReply);
+        }
+    })
+
+    console.log(`Sending a reply to comment with id: ${parentId}`, textAreaReply);
+
 }
 
 document.addEventListener('click', (e) => {
@@ -139,6 +183,14 @@ document.addEventListener('click', (e) => {
     }
     if (e.target.id == "reply-comment"){
         //console.log("reply comment ", e.target.dataset.id);
-        addReply(e.target.dataset.id);
+        createReplyFrag(e.target.dataset.id);        
+        e.target.setAttribute('disabled', 'false');
+        e.target.setAttribute('style', 'display: none;');        
+    }
+
+    if (e.target.id == "send-reply"){        
+        addReplyToComment(data, e.target.dataset.id);        
+        loadComments(data, idContainer);    
+        data = toLocalStorage(JSON.stringify(data));
     }
 })
