@@ -40,6 +40,7 @@ const loadComments = (json, idContainer) => {
     let comments = json.comments;
     let userName = json.currentUser.username;       
     document.getElementById(idContainer).innerHTML = "";
+    commentsCounter = 0;
     comments.forEach(comment => {           
         let currentComment = {...comment};
         let isOwnComment = (userName == currentComment.user.username) ? true : false;        
@@ -155,6 +156,49 @@ const addReplyToComment = (data, parentId) => {
 
 }
 
+const deleteComment = (data, id) => {
+    console.log("delete comment id: ", id);
+    let comments =  data.comments;
+    let commentIndex =  null;
+    let replyIndex = null;
+    comments.forEach((comment, index) => {
+        if (comment.id == id){
+            commentIndex = index;
+        }
+        comment.replies.forEach((reply, indexReply) => {
+            if (reply.id == id){
+                commentIndex = index;
+                replyIndex = indexReply;
+            }   
+        })
+    })
+    console.log(commentIndex, replyIndex);
+}
+
+const showModal = (id) => {
+    console.log("show modal to delete comment id: ", id);
+    let $modalConfirmation = document.createElement('section');
+    $modalConfirmation.classList.add('modal-confirmation');
+    $modalConfirmation.setAttribute('id', "modal-confirmation");
+    $modalConfirmation.innerHTML = `                            
+                            <div class="modal-confirmation__window" >
+                            <header class="modal-confirmation__window__header">Delete Comment</header>
+                            <p class="modal-confirmation__window__text">Are you sure you want to delete this comment? This will remove the comment and can't be undone.</p>
+                            <div class="modal-confirmation__window__buttons">
+                                <button class="btn confirmation-btn confirmation-btn--gray" id = "delete-comment-no" data-id = "${id}">no, cancel</button>
+                                <button class="btn confirmation-btn confirmation-btn--red" id = "delete-comment-yes" data-id = "${id}">Yes, delete</button>
+                            </div>
+                            </div>                        
+                `;
+    document.body.append($modalConfirmation)
+}
+
+const hideModal = (id) => {
+    const $modal = document.getElementById(id);
+    $modal.remove();
+    //console.log($modal); 
+}
+
 if (localStorage.getItem('data') == null){
     fetch('data.json')
         .then((response) => response.json())
@@ -177,15 +221,15 @@ document.addEventListener('click', (e) => {
         //console.log("increment", e.target.dataset.id) 
         upVote(data, e.target.dataset.id, +1) 
         loadComments(data, idContainer);  
+        data = toLocalStorage(JSON.stringify(data));
     }
     if (e.target.id.includes('decrement-vote') == true){
         //console.log("decrement", e.target.dataset.id) 
         upVote(data, e.target.dataset.id, -1) 
         loadComments(data, idContainer);  
+        data = toLocalStorage(JSON.stringify(data));
     }
-    if (e.target.id == "delete-comment"){
-        console.log("delete comment ", e.target.dataset.id);
-    }
+    
     if (e.target.id == "edit-comment"){
         console.log("edit comment ", e.target.dataset.id);
     }
@@ -200,5 +244,23 @@ document.addEventListener('click', (e) => {
         addReplyToComment(data, e.target.dataset.id);        
         loadComments(data, idContainer);    
         data = toLocalStorage(JSON.stringify(data));
+    }
+
+    if (e.target.id == "delete-comment"){
+        //console.log("delete comment ", e.target.dataset.id);
+        showModal(e.target.dataset.id);
+    }
+    
+    if (e.target.id == "delete-comment-no"){        
+        console.log("dont delete comment with id: ", e.target.dataset.id);
+        hideModal('modal-confirmation');
+    }
+    if (e.target.id == "delete-comment-yes"){        
+        
+        deleteComment(data, e.target.dataset.id);
+        //deleteComment(data, 4);
+        //loadComments(data, idContainer);    
+        //data = toLocalStorage(JSON.stringify(data));
+        hideModal('modal-confirmation');
     }
 })
