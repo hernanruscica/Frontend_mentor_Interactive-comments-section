@@ -31,34 +31,35 @@ const getUser = (data) => {
 }
 
 const toLocalStorage = (data) => {
+    console.log(data);
     localStorage.setItem('data', data);    
     return JSON.parse(localStorage.getItem('data'));
 } 
 
-const loadComments = (json, idContainer) => {
-    let commentsQuantity = json.comments.length;
-    let comments = json.comments;
-    let userName = json.currentUser.username;       
+const loadComments = (data, idContainer) => {
+    let commentsQuantity = data.comments.length;
+    let comments = data.comments;
+    let userName = data.currentUser.username;       
     document.getElementById(idContainer).innerHTML = "";
     commentsCounter = 0;
     comments.forEach(comment => {           
         let currentComment = {...comment};
         let isOwnComment = (userName == currentComment.user.username) ? true : false;        
-        let $comments =  createCommentFragment(currentComment, isOwnComment);
+        let $comments =  createCommentFragment(currentComment, isOwnComment, currentComment.id);
         document.getElementById(idContainer).appendChild($comments);   
         commentsCounter += 1;
         
         comment.replies.forEach((reply) => {                
-            currentComment = {...reply};
-            let isOwnComment = (userName == currentComment.user.username) ? true : false;            
-            $comments =  createCommentFragment(currentComment, isOwnComment);            
+            currentReply = {...reply};
+            let isOwnComment = (userName == currentReply.user.username) ? true : false;            
+            $comments =  createCommentFragment(currentReply, isOwnComment,currentComment.id);            
             document.getElementById(idContainer).appendChild($comments);
             commentsCounter += 1;
         })
     });  
 }
 
-const createCommentFragment = (comment, isOwnComment = false) => {    
+const createCommentFragment = (comment, isOwnComment = false, idCommentReply) => {    
 
     let $section = document.createElement("section");
     let mention = '';
@@ -84,7 +85,7 @@ const createCommentFragment = (comment, isOwnComment = false) => {
         you = `<p class="comments__item__header__you comments__item__header__you--visible">You</p>`;
     }else{
         actions = `
-                <button class="comments__item__actions__btn"  id ="reply-comment" data-id = "${comment.id}"  >
+                <button class="comments__item__actions__btn"  id ="reply-comment" data-id = "${idCommentReply}"  >
                     <i class="fa-solid fa-reply"></i>
                     Reply
                 </button>   
@@ -124,6 +125,7 @@ const createReplyFrag = (dataId) => {
                                     <img src="${currentUser.image}" alt="avatar image" class="textarea-item__image comments__item__header__round-img">
                                     <button class="btn textarea-item__btn" id = "send-reply" data-id = "${dataId}">SenD</button>
                             `;        
+    console.log($container);
     $container.insertAdjacentElement('afterend', $replySection);    
 }
 
@@ -148,8 +150,8 @@ const addReplyToComment = (data, parentId) => {
                 }    
     data.comments.forEach((comment) => {
         if (comment.id == parentId){
-            comment.replies.unshift(newReply);
-        }
+            comment.replies.push(newReply);
+        }        
     })
 
     console.log(`Sending a reply to comment with id: ${parentId}`, textAreaReply);
@@ -157,22 +159,17 @@ const addReplyToComment = (data, parentId) => {
 }
 
 const deleteComment = (data, id) => {
-    console.log("delete comment id: ", id);
-    let comments =  data.comments;
-    let commentIndex =  null;
-    let replyIndex = null;
-    comments.forEach((comment, index) => {
-        if (comment.id == id){
-            commentIndex = index;
-        }
-        comment.replies.forEach((reply, indexReply) => {
-            if (reply.id == id){
-                commentIndex = index;
-                replyIndex = indexReply;
-            }   
-        })
-    })
-    console.log(commentIndex, replyIndex);
+    let fakeArgId = 4
+    console.log("delete comment id: ", fakeArgId);
+    const temp = data.comments.filter(comment => comment.id != fakeArgId)
+
+    if (temp != []){
+        console.log("the array isn't empty");
+        
+    }
+    
+    console.log(temp);
+    //return temp;
 }
 
 const showModal = (id) => {
@@ -205,12 +202,13 @@ if (localStorage.getItem('data') == null){
         .then((json) => {       
             //write to the localstorage and a local variable 'data'               
             data = toLocalStorage(JSON.stringify(json))              ;
+            
             loadComments(data, idContainer);    
             getUser(data);        
         });
     }else{
         data = JSON.parse(localStorage.getItem('data'));
-        loadComments(data, idContainer);    
+        loadComments(data, idContainer);            
         getUser(data);
     }
 
