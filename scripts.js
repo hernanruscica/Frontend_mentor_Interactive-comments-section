@@ -16,11 +16,13 @@ const upVote = (data, id, value) => {
         if (comment.id == id) {            
             comment.score += value;
         }
+        /*
         comment.replies.forEach((reply) => {            
             if (reply.id == id) {                
                 reply.score += value;
             }
         })
+        */
     });
 } 
 
@@ -31,8 +33,19 @@ const getUser = (data) => {
 }
 
 const toLocalStorage = (data) => {
-    console.log(data);
-    localStorage.setItem('data', data);    
+    let temp = JSON.parse(data);        
+    let comments = temp.comments;        
+    comments.forEach((comment) => {
+        if (comment.hasOwnProperty('replies') == true){
+            comment.replies.forEach((reply) => {            
+                const myReply = Object.assign(reply, {'parentId': comment.id});
+                comments.push(myReply);               
+            })         
+            delete comment.replies;   
+        }
+    });    
+    //console.log(comments);    
+    localStorage.setItem('data', JSON.stringify(temp));    
     return JSON.parse(localStorage.getItem('data'));
 } 
 
@@ -44,19 +57,23 @@ const loadComments = (data, idContainer) => {
     commentsCounter = 0;
     comments.forEach(comment => {           
         let currentComment = {...comment};
-        let isOwnComment = (userName == currentComment.user.username) ? true : false;        
-        let $comments =  createCommentFragment(currentComment, isOwnComment, currentComment.id);
-        document.getElementById(idContainer).appendChild($comments);   
-        commentsCounter += 1;
-        
-        comment.replies.forEach((reply) => {                
-            currentReply = {...reply};
-            let isOwnComment = (userName == currentReply.user.username) ? true : false;            
-            $comments =  createCommentFragment(currentReply, isOwnComment,currentComment.id);            
-            document.getElementById(idContainer).appendChild($comments);
-            commentsCounter += 1;
-        })
+        if (currentComment.hasOwnProperty('parentId') == false){
+            let isOwnComment = (userName == currentComment.user.username) ? true : false;        
+            let $comments =  createCommentFragment(currentComment, isOwnComment, currentComment.id);
+            document.getElementById(idContainer).appendChild($comments);   
+            commentsCounter += 1;        
+        }
     });  
+    comments.forEach(comment => {           
+        let currentComment = {...comment};
+        if (currentComment.hasOwnProperty('parentId') == true){
+            let isOwnComment = (userName == currentComment.user.username) ? true : false;        
+            let $comment =  createCommentFragment(currentComment, isOwnComment, currentComment.id);
+            //document.getElementById(idContainer).appendChild($comment);   
+            document.getElementById(`comments-item-${currentComment.parentId}`).insertAdjacentElement("afterend", $comment);
+            commentsCounter += 1;        
+        }
+    }); 
 }
 
 const createCommentFragment = (comment, isOwnComment = false, idCommentReply) => {    
@@ -139,36 +156,28 @@ const addReplyToComment = (data, parentId) => {
                     "content": textAreaReply,
                     "createdAt": "Now",
                     "score": 0,
+                    "parentId": parentId,
                     "replyingTo": replyingTo,
                     "user": {
                     "image": { 
                         "png": currentUser.image,
                         "webp": `./images/avatars/image-${currentUser.userName}.webp`
                     },
-                    "username": currentUser.userName
+                    "username": currentUser.userName,                   
                     }
                 }    
-    data.comments.forEach((comment) => {
-        if (comment.id == parentId){
-            comment.replies.push(newReply);
-        }        
-    })
-
+    data.comments.push(newReply);    
     console.log(`Sending a reply to comment with id: ${parentId}`, textAreaReply);
-
 }
 
 const deleteComment = (data, id) => {
     let fakeArgId = 4
     console.log("delete comment id: ", fakeArgId);
-    const temp = data.comments.filter(comment => comment.id != fakeArgId)
-
-    if (temp != []){
-        console.log("the array isn't empty");
-        
-    }
+    let temp = data.comments.filter(comment => comment.id != id)
+    //temp.push(data.currentUser);
     
     console.log(temp);
+    console.log(data.currentUser);
     //return temp;
 }
 
