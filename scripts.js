@@ -15,14 +15,7 @@ const upVote = (data, id, value) => {
     data.comments.forEach(comment => {  
         if (comment.id == id) {            
             comment.score += value;
-        }
-        /*
-        comment.replies.forEach((reply) => {            
-            if (reply.id == id) {                
-                reply.score += value;
-            }
-        })
-        */
+        }        
     });
 } 
 
@@ -74,6 +67,7 @@ const loadComments = (data, idContainer) => {
             commentsCounter += 1;        
         }
     }); 
+    if (document.getElementById('textarea-comment-0') == null){ createReplyFrag("0"); } 
 }
 
 const createCommentFragment = (comment, isOwnComment = false, idCommentReply) => {    
@@ -131,14 +125,19 @@ const createCommentFragment = (comment, isOwnComment = false, idCommentReply) =>
     return $section;
 }
 
-const createReplyFrag = (dataId) => {    
-    const $container = document.getElementById(`comments-item-${dataId}`);
+const createReplyFrag = (dataId) => { 
+    let  $container = null;
+    if (dataId == 0){
+        $container = document.getElementById('comments-container');
+    }else{   
+        $container = document.getElementById(`comments-item-${dataId}`);
+    }
     const $replySection =  document.createElement('section');
     $replySection.classList.add('textarea-item');
     
     $replySection.classList.add('comments__item--reply');
     $replySection.innerHTML = `  <textarea class = "textarea-item__textarea " placeholder="Add a reply to the comment..."
-                                    name="comment" id="textarea-comment-${dataId}" ></textarea>
+                                    name="comment" id="textarea-comment-${dataId}"></textarea>
                                     <img src="${currentUser.image}" alt="avatar image" class="textarea-item__image comments__item__header__round-img">
                                     <button class="btn textarea-item__btn" id = "send-reply" data-id = "${dataId}">SenD</button>
                             `;        
@@ -148,16 +147,19 @@ const createReplyFrag = (dataId) => {
 
 const addReplyToComment = (data, parentId) => {
     let idPrefix = 'textarea-comment-';    
-    let replyingTo = document.getElementById(`comments-item-${parentId}`).querySelector('header p').innerHTML;
+    let replyingTo = null; 
+    if (parentId == '0'){
+        replyingTo = null;
+    }else {
+        replyingTo = document.getElementById(`comments-item-${parentId}`).querySelector('header p').innerHTML;
+    }
     const textAreaReply = document.getElementById(idPrefix + parentId).value;
     let newUniqueId = commentsCounter + 1
     let newReply = {
                     "id": newUniqueId,
                     "content": textAreaReply,
                     "createdAt": "Now",
-                    "score": 0,
-                    "parentId": parentId,
-                    "replyingTo": replyingTo,
+                    "score": 0,                    
                     "user": {
                     "image": { 
                         "png": currentUser.image,
@@ -165,20 +167,23 @@ const addReplyToComment = (data, parentId) => {
                     },
                     "username": currentUser.userName,                   
                     }
-                }    
+                }   
+    if (parentId != '0') {
+        newReply["parentId"] = parentId
+        newReply["replyingTo"] = replyingTo
+    } ;
     data.comments.push(newReply);    
     console.log(`Sending a reply to comment with id: ${parentId}`, textAreaReply);
 }
 
 const deleteComment = (data, id) => {
     let fakeArgId = 4
-    console.log("delete comment id: ", fakeArgId);
-    let temp = data.comments.filter(comment => comment.id != id)
-    //temp.push(data.currentUser);
-    
-    console.log(temp);
-    console.log(data.currentUser);
-    //return temp;
+    console.log("delete comment id: ", id);
+    let temp = data.comments.filter(comment => comment.id != id)    
+    return {
+            "comments": temp,
+            "currentUser": data.currentUser
+    };
 }
 
 const showModal = (id) => {
@@ -211,14 +216,15 @@ if (localStorage.getItem('data') == null){
         .then((json) => {       
             //write to the localstorage and a local variable 'data'               
             data = toLocalStorage(JSON.stringify(json))              ;
-            
+            getUser(data);  
             loadComments(data, idContainer);    
-            getUser(data);        
+                  
         });
     }else{
         data = JSON.parse(localStorage.getItem('data'));
-        loadComments(data, idContainer);            
         getUser(data);
+        loadComments(data, idContainer);            
+        
     }
 
 
@@ -264,10 +270,10 @@ document.addEventListener('click', (e) => {
     }
     if (e.target.id == "delete-comment-yes"){        
         
-        deleteComment(data, e.target.dataset.id);
-        //deleteComment(data, 4);
-        //loadComments(data, idContainer);    
-        //data = toLocalStorage(JSON.stringify(data));
+        data = deleteComment(data, e.target.dataset.id);
+        
+        loadComments(data, idContainer);    
+        data = toLocalStorage(JSON.stringify(data));
         hideModal('modal-confirmation');
     }
 })
