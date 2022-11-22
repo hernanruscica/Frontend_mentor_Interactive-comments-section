@@ -106,9 +106,7 @@ const createCommentFragment = (comment, isOwnComment = false, idCommentReply) =>
       ${you}
       <p class="comments__item__header__date">${comment.createdAt}</p>
     </header>
-    <p class="comments__item__content">
-      ${mention + comment.content}
-    </p>
+    <p class="comments__item__content">${mention + comment.content}</p>
     <div class="comments__item__votes">
       <button class="comments__item__votes__btn " id ="increment-vote" data-id = "${comment.id}">+</button>
       <p class="comments__item__votes__quantity">${comment.score}</p>
@@ -197,6 +195,42 @@ const deleteComment = (data, id) => {
     };
 }
 
+const createEditFrag = (id) => {
+    console.log("edit comment ", id);
+/*
+    `  <textarea class = "textarea-item__textarea " placeholder="Add a reply to the comment..."
+                                    name="comment" id="textarea-comment-${dataId}"></textarea>
+                                    <img src="${currentUser.image}" alt="avatar image" class="textarea-item__image comments__item__header__round-img">
+                                    <button class="btn textarea-item__btn" id = "send-reply" data-id = "${dataId}">SenD</button>
+                            `
+*/
+        
+    let $contentToEdit = document.querySelector(`#comments-item-${id}>p`);
+    let contentToEdit = $contentToEdit.innerHTML;
+    
+    const $textAreaEdit = document.createElement("textarea");
+
+    const $actions = document.querySelector(`#comments-item-${id} .comments__item__actions`);
+    console.log($actions);
+    $actions.innerHTML = "";
+    $actions.innerHTML = `<button class="btn textarea-item__btn" id="send-update" data-id="${id}">update</button>`;
+
+    $textAreaEdit.classList.add('comments__item__content-edit');
+    $textAreaEdit.innerText = contentToEdit;
+    $textAreaEdit.setAttribute('name', 'comment');
+    $textAreaEdit.setAttribute('id', `textarea-comment-${id}`);
+    $contentToEdit.insertAdjacentElement('afterend', $textAreaEdit);   
+    $contentToEdit.remove();    
+    
+    console.log($contentToEdit);
+}
+
+const updateComment = (data, id) => {
+    console.log(`update en id ${id}`);  
+    const contentToUpdate = document.getElementById(`textarea-comment-${id}`).value;  
+    console.log(contentToUpdate);
+}
+
 const showModal = (id) => {
     console.log("show modal to delete comment id: ", id);
     let $modalConfirmation = document.createElement('section');
@@ -255,7 +289,7 @@ document.addEventListener('click', (e) => {
     }
     
     if (e.target.id == "edit-comment"){
-        console.log("edit comment ", e.target.dataset.id);
+        createEditFrag(e.target.dataset.id);
     }
     if (e.target.id == "reply-comment"){
         //console.log("reply comment ", e.target.dataset.id);
@@ -270,6 +304,13 @@ document.addEventListener('click', (e) => {
         data = toLocalStorage(JSON.stringify(data));
     }
 
+    if (e.target.id == "send-update"){              
+        
+        updateComment(data, e.target.dataset.id);
+        loadComments(data, idContainer);    
+        data = toLocalStorage(JSON.stringify(data));
+    }
+
     if (e.target.id == "delete-comment"){
         //console.log("delete comment ", e.target.dataset.id);
         showModal(e.target.dataset.id);
@@ -279,10 +320,8 @@ document.addEventListener('click', (e) => {
         console.log("dont delete comment with id: ", e.target.dataset.id);
         hideModal('modal-confirmation');
     }
-    if (e.target.id == "delete-comment-yes"){        
-        
-        data = deleteComment(data, e.target.dataset.id);
-        
+    if (e.target.id == "delete-comment-yes"){  
+        data = deleteComment(data, e.target.dataset.id);        
         loadComments(data, idContainer);    
         data = toLocalStorage(JSON.stringify(data));
         hideModal('modal-confirmation');

@@ -84,6 +84,19 @@ body {
     margin: 0.4em 0 1em 0;    
 }
 
+.comments__item__content-edit{
+    font-size: 1.2em;
+    padding: 0.5em;
+    grid-area: mycontent;
+    color: var(--Grayish-Blue);
+    line-height: 1.5em;
+    margin: 0.4em 0 1em 0;    
+    resize: none;
+    height: 10em;
+    border: 1px solid var(--Grayish-Blue);
+    border-radius: 10px;
+}
+
 .comments__item__header__date {
     margin-left: 1em;
     color: var(--Grayish-Blue);
