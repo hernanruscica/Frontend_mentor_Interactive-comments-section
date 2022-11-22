@@ -7,9 +7,6 @@ let currentUser = {
     'image' : null,
     'userName': null
 }
-
-
-
     
 const upVote = (data, id, value) => {       
     data.comments.forEach(comment => {  
@@ -18,7 +15,6 @@ const upVote = (data, id, value) => {
         }        
     });
 } 
-
 
 const getUser = (data) => {   
     currentUser.image = data.currentUser.image.png;
@@ -126,11 +122,7 @@ const createCommentFragment = (comment, isOwnComment = false, idCommentReply) =>
 
 const createReplyFrag = (dataId) => { 
     let  $container = null;
-    if (dataId == 0){
-        $container = document.getElementById('comments-container');
-    }else{   
-        $container = document.getElementById(`comments-item-${dataId}`);
-    }
+    
     const $replySection =  document.createElement('section');
     $replySection.classList.add('textarea-item');
     
@@ -140,8 +132,16 @@ const createReplyFrag = (dataId) => {
                                     <img src="${currentUser.image}" alt="avatar image" class="textarea-item__image comments__item__header__round-img">
                                     <button class="btn textarea-item__btn" id = "send-reply" data-id = "${dataId}">SenD</button>
                             `;        
+    if (dataId == 0){
+        $container = document.getElementById('comments-container');
+        $replySection.classList.remove('comments__item--reply');
+        $container.appendChild($replySection);    
+    }else{   
+        $container = document.getElementById(`comments-item-${dataId}`);
+        $container.insertAdjacentElement('afterend', $replySection);    
+    }
     console.log($container);
-    $container.insertAdjacentElement('afterend', $replySection);    
+    
 }
 
 const addReplyToComment = (data, parentId) => {
