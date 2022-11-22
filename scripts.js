@@ -7,7 +7,7 @@ let currentUser = {
     'image' : null,
     'userName': null
 }
-let commentsCounter = 1;
+
 
 
     
@@ -36,8 +36,8 @@ const toLocalStorage = (data) => {
             })         
             delete comment.replies;   
         }
-    });    
-    //console.log(comments);    
+    });      
+       
     localStorage.setItem('data', JSON.stringify(temp));    
     return JSON.parse(localStorage.getItem('data'));
 } 
@@ -47,24 +47,23 @@ const loadComments = (data, idContainer) => {
     let comments = data.comments;
     let userName = data.currentUser.username;       
     document.getElementById(idContainer).innerHTML = "";
-    commentsCounter = 0;
+   
     comments.forEach(comment => {           
         let currentComment = {...comment};
         if (currentComment.hasOwnProperty('parentId') == false){
             let isOwnComment = (userName == currentComment.user.username) ? true : false;        
             let $comments =  createCommentFragment(currentComment, isOwnComment, currentComment.id);
             document.getElementById(idContainer).appendChild($comments);   
-            commentsCounter += 1;        
+                   
         }
     });  
     comments.forEach(comment => {           
         let currentComment = {...comment};
         if (currentComment.hasOwnProperty('parentId') == true){
             let isOwnComment = (userName == currentComment.user.username) ? true : false;        
-            let $comment =  createCommentFragment(currentComment, isOwnComment, currentComment.id);
-            //document.getElementById(idContainer).appendChild($comment);   
+            let $comment =  createCommentFragment(currentComment, isOwnComment, currentComment.id);             
             document.getElementById(`comments-item-${currentComment.parentId}`).insertAdjacentElement("afterend", $comment);
-            commentsCounter += 1;        
+                 
         }
     }); 
     if (document.getElementById('textarea-comment-0') == null){ createReplyFrag("0"); } 
@@ -154,7 +153,19 @@ const addReplyToComment = (data, parentId) => {
         replyingTo = document.getElementById(`comments-item-${parentId}`).querySelector('header p').innerHTML;
     }
     const textAreaReply = document.getElementById(idPrefix + parentId).value;
-    let newUniqueId = commentsCounter + 1
+         
+
+    let newUniqueId = 0;
+    let idExits = data.comments.map(comment => comment.id).filter(commentId => commentId == newUniqueId ).length != 0;
+    console.log(idExits);
+
+    while (idExits == true){
+        newUniqueId = newUniqueId + 1;
+        idExits = data.comments.map(comment => comment.id).filter(commentId => commentId == newUniqueId ).length != 0;
+        console.log("ddd");
+    
+    }
+
     let newReply = {
                     "id": newUniqueId,
                     "content": textAreaReply,
