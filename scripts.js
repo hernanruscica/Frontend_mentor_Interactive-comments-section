@@ -138,8 +138,7 @@ const createReplyFrag = (dataId) => {
         $container = document.getElementById(`comments-item-${dataId}`);
         $container.insertAdjacentElement('afterend', $replySection);    
     }
-    console.log($container);
-    
+        
 }
 
 const addReplyToComment = (data, parentId) => {
@@ -150,17 +149,15 @@ const addReplyToComment = (data, parentId) => {
     }else {
         replyingTo = document.getElementById(`comments-item-${parentId}`).querySelector('header p').innerHTML;
     }
-    const textAreaReply = document.getElementById(idPrefix + parentId).value;
-         
+    const textAreaReply = document.getElementById(idPrefix + parentId).value;        
 
     let newUniqueId = 0;
-    let idExits = data.comments.map(comment => comment.id).filter(commentId => commentId == newUniqueId ).length != 0;
-    console.log(idExits);
+    let idExits = data.comments.map(comment => comment.id).filter(commentId => commentId == newUniqueId ).length != 0;   
 
     while (idExits == true){
         newUniqueId = newUniqueId + 1;
         idExits = data.comments.map(comment => comment.id).filter(commentId => commentId == newUniqueId ).length != 0;
-        console.log("ddd");
+        
     
     }
 
@@ -182,12 +179,12 @@ const addReplyToComment = (data, parentId) => {
         newReply["replyingTo"] = replyingTo
     } ;
     data.comments.push(newReply);    
-    console.log(`Sending a reply to comment with id: ${parentId}`, textAreaReply);
+   // console.log(`Sending a reply to comment with id: ${parentId}`, textAreaReply);
 }
 
 const deleteComment = (data, id) => {
     let fakeArgId = 4
-    console.log("delete comment id: ", id);
+    //console.log("delete comment id: ", id);
     let temp = data.comments.filter(comment => comment.id != id)    
     return {
             "comments": temp,
@@ -196,43 +193,53 @@ const deleteComment = (data, id) => {
 }
 
 const createEditFrag = (id) => {
-    console.log("edit comment ", id);
-/*
-    `  <textarea class = "textarea-item__textarea " placeholder="Add a reply to the comment..."
-                                    name="comment" id="textarea-comment-${dataId}"></textarea>
-                                    <img src="${currentUser.image}" alt="avatar image" class="textarea-item__image comments__item__header__round-img">
-                                    <button class="btn textarea-item__btn" id = "send-reply" data-id = "${dataId}">SenD</button>
-                            `
-*/
+    //console.log("edit comment ", id);
         
     let $contentToEdit = document.querySelector(`#comments-item-${id}>p`);
     let contentToEdit = $contentToEdit.innerHTML;
+
+    let cutFrom = contentToEdit.indexOf('@');
+    let cutTo = contentToEdit.indexOf('</a>');
+    let replyingTo = contentToEdit.slice(cutFrom, cutTo);
+    contentToEdit = contentToEdit.slice(cutTo + '</a>'.length).trim();
     
     const $textAreaEdit = document.createElement("textarea");
 
     const $actions = document.querySelector(`#comments-item-${id} .comments__item__actions`);
-    console.log($actions);
+    //console.log($actions);
     $actions.innerHTML = "";
     $actions.innerHTML = `<button class="btn textarea-item__btn" id="send-update" data-id="${id}">update</button>`;
 
     $textAreaEdit.classList.add('comments__item__content-edit');
-    $textAreaEdit.innerText = contentToEdit;
+    $textAreaEdit.innerText = '';
+    $textAreaEdit.innerText = `${replyingTo} ${contentToEdit}`;
     $textAreaEdit.setAttribute('name', 'comment');
     $textAreaEdit.setAttribute('id', `textarea-comment-${id}`);
     $contentToEdit.insertAdjacentElement('afterend', $textAreaEdit);   
     $contentToEdit.remove();    
     
-    console.log($contentToEdit);
+    //console.log($contentToEdit);
 }
 
 const updateComment = (data, id) => {
-    console.log(`update en id ${id}`);  
-    const contentToUpdate = document.getElementById(`textarea-comment-${id}`).value;  
-    console.log(contentToUpdate);
+    //console.log(`update en id ${id}`);  
+    let contentToUpdate = document.getElementById(`textarea-comment-${id}`).value;  
+    //console.log(contentToUpdate);//<a href="" class="user-mention">@ramsesmiron</a>  I couldn't agree more with this. 
+    let cutFrom = contentToUpdate.indexOf('@');
+    let cutTo = contentToUpdate.indexOf(' ');
+    let replyingTo = contentToUpdate.slice(cutFrom, cutTo);
+    contentToUpdate = contentToUpdate.slice(cutTo + ' '.length).trim();
+    //console.log(replyingTo, contentToUpdate);
+
+    data.comments.forEach((comment) => {
+        if (comment.id == id && contentToUpdate != ''){
+            comment.content = contentToUpdate;
+        }
+    })
 }
 
 const showModal = (id) => {
-    console.log("show modal to delete comment id: ", id);
+    //console.log("show modal to delete comment id: ", id);
     let $modalConfirmation = document.createElement('section');
     $modalConfirmation.classList.add('modal-confirmation');
     $modalConfirmation.setAttribute('id', "modal-confirmation");
@@ -268,10 +275,8 @@ if (localStorage.getItem('data') == null){
     }else{
         data = JSON.parse(localStorage.getItem('data'));
         getUser(data);
-        loadComments(data, idContainer);            
-        
+        loadComments(data, idContainer);         
     }
-
 
 document.addEventListener('click', (e) => {
     //console.log("click en el document", e.target.id)
@@ -317,7 +322,7 @@ document.addEventListener('click', (e) => {
     }
     
     if (e.target.id == "delete-comment-no"){        
-        console.log("dont delete comment with id: ", e.target.dataset.id);
+        //console.log("dont delete comment with id: ", e.target.dataset.id);
         hideModal('modal-confirmation');
     }
     if (e.target.id == "delete-comment-yes"){  
